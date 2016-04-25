@@ -1,0 +1,6 @@
+mongodb:
+  lookup:
+    pkg: mymongodb
+    conf_file: /usr/local/etc/mongodb/mongodb.conf
+  config:
+    key: othervalue
