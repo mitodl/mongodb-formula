@@ -1,0 +1,9 @@
+name: mongodb
+os: Ubuntu, Debian
+os_family: Debian
+version: 201604
+release: 1
+summary: SaltStack formula for building a MongoDB replica set with access controls.
+description: SaltStack formula for building a MongoDB replica set with access controls.
+top_level_dir: mongodb
+recommended: 
