@@ -1,4 +1,8 @@
-test_install_erlang_solutions_repository:
+{% from "mongodb/map.jinja" import mongodb with context %}
+
+{% for package in mongodb.pkgs %}
+test_installed_{{ package }}:
   testinfra.package:
-    - name: mongodb-org
+    - name: {{ package }}
     - is_installed: True
+{% endfor %}
