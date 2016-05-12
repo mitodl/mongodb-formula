@@ -1,18 +1,17 @@
 {% set mongodb = salt['grains.filter_by']({
     'default': {
-        'pkg': 'mongodb',
-        'service': 'mongodb',
         'conf_file': '/etc/mongodb/mongodb.conf',
         'config': {
             'key': 'value',
         },
     },
     'Debian': {
-        'mongo_repository': 'deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.3 main',
-        'mongo_key': 'EA312927',
+        'mongo_repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',
+        'mongo_repo_dist': 'dist',
+        'mongo_key': '7F0CEB10',
         'mongo_keyserver': 'keyserver.ubuntu.com',
         'pkgs': [
-            'mongodb-org'
+          {'mongodb-org': '2.6.5'},
         ]
     },
     'RedHat': {
