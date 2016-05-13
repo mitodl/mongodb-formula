@@ -2,16 +2,16 @@
 
 add_mongodb_package_repository:
   pkgrepo.managed:
-    - name: {{ mongodb.mongo_repo }}
+    - name: {{ salt.pillar.get('mongodb:install:repo') }}
     - humanname: MongoDB 2.6.5 Repository
-    - dist: {{ mongodb.mongo_repo_dist }}
-    - keyid: {{ mongodb.mongo_key }}
-    - keyserver: {{ mongodb.mongo_keyserver }}
+    - dist: {{ salt.pillar.get('mongodb:install:repo_dist') }}
+    - keyid: {{ salt.pillar.get('mongodb:install:key') }}
+    - keyserver: {{ salt.pillar.get('mongodb:install:keyserver') }}
     - refresh_db: True
 
 install_packages:
   pkg.installed:
-    - pkgs: {{ mongodb.pkgs }}
+    - pkgs: {{ salt.pillar.get('mongodb:install:pkgs') }}
     - refresh: True
     - install_recommends: True
     - require:
