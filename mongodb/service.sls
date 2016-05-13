@@ -1,7 +1,7 @@
 start_mongodb_service:
   service.running:
     - running: True
-    - name: mongod
+    - name: mongodb
     - enable: True
     - require:
       - pkg: install_packages

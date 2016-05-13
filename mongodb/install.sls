@@ -2,11 +2,11 @@
 
 add_mongodb_package_repository:
   pkgrepo.managed:
-    - name: {{ mongodb.mongo_repo }}
+    - name: {{ mongodb.repo }}
     - humanname: MongoDB 2.6.5 Repository
-    - dist: {{ mongodb.mongo_repo_dist }}
-    - keyid: {{ mongodb.mongo_key }}
-    - keyserver: {{ mongodb.mongo_keyserver }}
+    - dist: {{ mongodb.repo_dist }}
+    - keyid: {{ mongodb.key }}
+    - keyserver: {{ mongodb.keyserver }}
     - refresh_db: True
 
 install_packages:
