@@ -4,7 +4,7 @@
 {# Bind to all ips(default) if in clustered mode,
    otherwise only to the specified local ip.
 #}
-{% if !cluster_enabled %}
+{% if not cluster_enabled %}
 bind_ip = {{ mongodb.bind_ip }}
 {% endif %}
 
