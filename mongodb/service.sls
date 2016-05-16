@@ -1,5 +1,5 @@
 start_mongodb_service:
-  service.running:
+  service.start:
     - running: True
     - name: mongodb
     - enable: True

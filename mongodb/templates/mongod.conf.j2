@@ -1,0 +1,24 @@
+{% from "mongodb/map.jinja" import mongodb with context %}
+{% set cluster_enabled = salt.pillar.get('mongodb:cluster:enabled', True) %}
+
+{# Bind to all ips(default) if in clustered mode,
+   otherwise only to the specified local ip.
+#}
+{% if !cluster_enabled %}
+bind_ip = {{ mongodb.bind_ip }}
+{% endif %}
+
+port = {{ mongodb.port }}
+
+# Enable journaling, http://www.mongodb.org/display/DOCS/Journaling
+{% if mongodb.enable_journal %}
+journal = true
+{% else %}
+journal = false
+nojournal = true
+{% endif %}
+
+{% if cluster_enabled %}
+keyFile = {{ mongodb.cluster_key_file }}
+replSet = {{ mongodb.repl_set }}
+{% endif %}

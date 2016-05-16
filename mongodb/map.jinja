@@ -6,6 +6,10 @@
         {'mongodb-10gen': '*'},
       ],
       'cluster_key_file': '/etc/mongodb_key',
+      'bind_ip': '127.0.0.1',
+      'port': 12017,
+      'enable_journal': True,
+      'repl_set': 'rs0',
     },
     'Debian': {
       'repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',

@@ -11,3 +11,19 @@ copy_mongodb_key_file:
     - require:
       - pkg: install_packages
 {% endif %}
+
+stop_mongodb_service:
+  service.dead:
+    - running: True
+    - name: mongodb
+    - enable: True
+    - require:
+      - pkg: install_packages
+
+place_mongodb_config_file:
+  file.managed:
+    - name: /etc/mongod.conf
+    - template: jinja
+    - source: salt://mongodb/templates/mongodb.conf.j2
+    - watch_in:
+      - service: start_mongodb_service
