@@ -3,13 +3,13 @@
       'key': '7F0CEB10',
       'keyserver': 'keyserver.ubuntu.com',
       'pkgs': [
-        {'mongodb-org-unstable': '3.3.5'},
+        {'mongodb-10gen': '2.6.5'},
       ],
       'mongo_cluster_key_file': '/etc/mongodb_key',
     },
     'Debian': {
-      'repo': 'deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.3 main',
-      'repo_dist': 'jessie/mongodb-org/3.3',
+      'repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',
+      'repo_dist': 'dist',
     },
     'RedHat': {},
 }, grain='os_family', merge=salt['pillar.get']('mongodb:lookup'), base='default') %}
