@@ -3,6 +3,13 @@
       'mongo_cluster_key_file': '/etc/mongodb_key',
     },
     'Debian': {
+      'mongo_repo': 'deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.3 main',
+      'mongo_repo_dist': 'jessie/mongodb-org/3.3',
+      'mongo_key': '7F0CEB10',
+      'mongo_keyserver': 'keyserver.ubuntu.com',
+      'pkgs': [
+        {'mongodb-org': '3.3.5'}
+      ],
     },
     'RedHat': {
     },
