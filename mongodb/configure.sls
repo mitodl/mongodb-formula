@@ -3,7 +3,7 @@
 {% if salt.pillar.get('mongodb:cluster:enabled') %}
 copy_mongodb_key_file:
   file.managed:
-    - name: {{ mongodb.mongo_cluster_key_file }}
+    - name: {{ mongodb.cluster_key_file }}
     - contents: "{{ salt.pillar.get('mongodb:cluster:cluster_key') }}"
     - owner: mongodb
     - group: mongodb

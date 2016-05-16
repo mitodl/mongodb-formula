@@ -3,7 +3,7 @@
 {% if salt.pillar.get('mongodb:cluster:enabled') %}
 test_copy_mongodb_key_file:
   testinfra.file:
-    - name: {{ mongodb.mongo_cluster_key_file }}
+    - name: {{ mongodb.cluster_key_file }}
     - exists: True
     - contains:
         parameter: "{{ salt.pillar.get('mongodb:cluster:cluster_key') }}"
