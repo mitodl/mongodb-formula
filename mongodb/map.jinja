@@ -11,7 +11,5 @@
       'repo': 'deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.3 main',
       'repo_dist': 'jessie/mongodb-org/3.3',
     },
-    'RedHat': {
-
-    },
+    'RedHat': {},
 }, grain='os_family', merge=salt['pillar.get']('mongodb:lookup'), base='default') %}
