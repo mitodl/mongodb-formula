@@ -25,5 +25,3 @@ place_mongodb_config_file:
     - name: /etc/mongod.conf
     - template: jinja
     - source: salt://mongodb/templates/mongod.conf.j2
-    - watch_in:
-      - service: start_mongodb_service
