@@ -48,7 +48,7 @@ add_admin_user:
     - passwd: {{ salt.pillar.get('mongodb:admin_password') }}
     - database: admin
     - host: localhost
-    - port: 27017
+    - port: {{ mongodb.port }}
     - require:
         - cmd: wait_for_initialization
         - cmd: initiate_replset
