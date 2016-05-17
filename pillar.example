@@ -1,22 +1,22 @@
 mongodb:
   lookup:
     install:
-  cluster:
-    enabled: True
-    cluster_key: |
-      W9MAi8JEUhOYOl6aFibIiu0rqM7jVreNqZCqKMLE71eT/suAkCrpoeAcAxqbWmkh
-      TT0jfCE/JejwUsaS9wlmvfcRW5EtrMBHfnCtBhgNtSLXVcWfY/CgEmNSFTzInCUp
-      adhtZHwb+EOCZId9pIv3zSgSsX3REnujRISbBOkJnqRhZ7Z2wK8roDC3nuCfCjmQ
-      vSCIo3mr4EtMovCWeoTHAvUUo32ngr6X+U0Nk0abfpyYj7Xx+vwxpIAuwULxAQU8
-      fW/rbzQ1UnFLs/Yd3eYoP4kLzSOxYgU2li514b8K+ZieLJ78BMFZgz62FscTerbN
-      Uk1jkDK1/UkZHc1dILeB5bjZaCz9Kqy3xzdMsLYzKEQ2/uQCdIxmjcL7I1nH/+xF
-      XU0s4KRF6XSoxZZqnucYdLFvlrvvmp/LZaG6L8gFbjk8udkzKYgYyQ4y3ZimKyXz
-      C+YL6ySEXjCGVsfbL2r6Qo3TLF4lu+JMO52gjw5zKvG1xvvUP44p9jnTIKo2cGB/
-      wJ8sEij/ob2Ppbx1Oh+RKpsGLQLIcH1l/pd1y6jB+aDiPfsV8FJNMgW7PvaoTb4k
-      a5mvOjbKL2AapezhJGEq6h5VfBjZh/hqvye4vo+ZAYaj4+l+11TGtjX3VnLE0BRm
-      m99VGhNHJAHqzk9+XSsYvtIhObQx2xoYWG0yREaXKlaWVbP5W7H/cygIs8ds904R
-      koDq42gbcbUkGJn6mNdZogzHRvX9ohY2Z/SEsM3K99kWi/rdwp4Zm1jRxUbRxHht
-      PKlf4BDQ2rPQpgwYXaahh5Nt2SFuvdQD9GiUen1q+hJWCKLNP80hSntiu+QasHp5
-      X/N+VytjbACFPL1o+na1PqXDWwdCvY5jnJDW5nutSOIxuKJlNfuZCS99GlCXNMau
-      cj8ViG+kBXIeTaAyzu8CirXGHpV4hUDphqEDo39R4iePzO6Z1ndvduSdhb+/np4t
-      6vZZZHR2DzeU8j08tQDpvcP/h81t
+  admin_username: admin
+  admin_password: password
+  cluster_key: |
+    W9MAi8JEUhOYOl6aFibIiu0rqM7jVreNqZCqKMLE71eT/suAkCrpoeAcAxqbWmkh
+    TT0jfCE/JejwUsaS9wlmvfcRW5EtrMBHfnCtBhgNtSLXVcWfY/CgEmNSFTzInCUp
+    adhtZHwb+EOCZId9pIv3zSgSsX3REnujRISbBOkJnqRhZ7Z2wK8roDC3nuCfCjmQ
+    vSCIo3mr4EtMovCWeoTHAvUUo32ngr6X+U0Nk0abfpyYj7Xx+vwxpIAuwULxAQU8
+    fW/rbzQ1UnFLs/Yd3eYoP4kLzSOxYgU2li514b8K+ZieLJ78BMFZgz62FscTerbN
+    Uk1jkDK1/UkZHc1dILeB5bjZaCz9Kqy3xzdMsLYzKEQ2/uQCdIxmjcL7I1nH/+xF
+    XU0s4KRF6XSoxZZqnucYdLFvlrvvmp/LZaG6L8gFbjk8udkzKYgYyQ4y3ZimKyXz
+    C+YL6ySEXjCGVsfbL2r6Qo3TLF4lu+JMO52gjw5zKvG1xvvUP44p9jnTIKo2cGB/
+    wJ8sEij/ob2Ppbx1Oh+RKpsGLQLIcH1l/pd1y6jB+aDiPfsV8FJNMgW7PvaoTb4k
+    a5mvOjbKL2AapezhJGEq6h5VfBjZh/hqvye4vo+ZAYaj4+l+11TGtjX3VnLE0BRm
+    m99VGhNHJAHqzk9+XSsYvtIhObQx2xoYWG0yREaXKlaWVbP5W7H/cygIs8ds904R
+    koDq42gbcbUkGJn6mNdZogzHRvX9ohY2Z/SEsM3K99kWi/rdwp4Zm1jRxUbRxHht
+    PKlf4BDQ2rPQpgwYXaahh5Nt2SFuvdQD9GiUen1q+hJWCKLNP80hSntiu+QasHp5
+    X/N+VytjbACFPL1o+na1PqXDWwdCvY5jnJDW5nutSOIxuKJlNfuZCS99GlCXNMau
+    cj8ViG+kBXIeTaAyzu8CirXGHpV4hUDphqEDo39R4iePzO6Z1ndvduSdhb+/np4t
+    6vZZZHR2DzeU8j08tQDpvcP/h81t
