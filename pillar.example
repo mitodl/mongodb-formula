@@ -1,6 +1,8 @@
 mongodb:
   lookup:
     install:
+  admin_username: admin
+  admin_password: password
   cluster:
     enabled: True
     cluster_key: |
