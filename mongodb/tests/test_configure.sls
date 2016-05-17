@@ -1,12 +1,11 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
 
-{% if salt.pillar.get('mongodb:cluster:enabled') %}
 test_copy_mongodb_key_file:
   testinfra.file:
     - name: {{ mongodb.cluster_key_file }}
     - exists: True
     - contains:
-        parameter: "{{ salt.pillar.get('mongodb:cluster:cluster_key') }}"
+        parameter: "{{ salt.pillar.get('mongodb:cluster_key') }}"
         expected: True
         comparison: is_
     - user:
@@ -21,4 +20,3 @@ test_copy_mongodb_key_file:
         parameter: 384
         expected: True
         comparison: eq
-{% endif %}

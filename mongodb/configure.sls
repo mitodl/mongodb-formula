@@ -1,17 +1,15 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
 
-#TODO: Remove non-clustering flow for now - it just complicates things
-{% if salt.pillar.get('mongodb:cluster:enabled') %}
+#DOING: Remove non-clustering flow for now - it just complicates things
 copy_mongodb_key_file:
   file.managed:
     - name: {{ mongodb.cluster_key_file }}
-    - contents: "{{ salt.pillar.get('mongodb:cluster:cluster_key') }}"
+    - contents: "{{ salt.pillar.get('mongodb:cluster_key') }}"
     - owner: mongodb
     - group: mongodb
     - mode: 0600
     - require:
       - pkg: install_packages
-{% endif %}
 
 stop_mongodb_service:
   service.dead:
