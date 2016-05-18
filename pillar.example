@@ -20,3 +20,12 @@ mongodb:
     X/N+VytjbACFPL1o+na1PqXDWwdCvY5jnJDW5nutSOIxuKJlNfuZCS99GlCXNMau
     cj8ViG+kBXIeTaAyzu8CirXGHpV4hUDphqEDo39R4iePzO6Z1ndvduSdhb+/np4t
     6vZZZHR2DzeU8j08tQDpvcP/h81t
+  users:
+    - user: cs_comments_service
+      password: password
+      database: cs_comments_service
+      roles: readWrite
+    - user: edxapp
+      password: password
+      database: edxapp
+      roles: readWrite
