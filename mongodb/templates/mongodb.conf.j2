@@ -4,6 +4,10 @@
    otherwise only to the specified local ip.
 #}
 
+dbpath = /var/lib/mongodb
+logpath = /var/log/mongodb/mongodb.log
+logappend = true
+
 port = {{ mongodb.port }}
 
 # Enable journaling, http://www.mongodb.org/display/DOCS/Journaling

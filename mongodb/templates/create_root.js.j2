@@ -1,0 +1,25 @@
+{% from "mongodb/map.jinja" import mongodb with context %}
+{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
+{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
+
+// Add super user
+conn = new Mongo("localhost:{{ mongodb.port }}");
+db = conn.getDB("admin");
+
+if(!db.auth('{{ MONGO_ADMIN_USER }}', '{{ MONGO_ADMIN_PASSWORD }}')) {
+    db.addUser(
+        {
+            "user": "{{ MONGO_ADMIN_USER }}",
+            "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
+            "roles": ["root"]
+        }
+    );
+} else {
+    db.updateUser(
+        "{{ MONGO_ADMIN_USER }}",
+        {
+            "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
+            "roles": ["root"]
+        }
+    );
+}
