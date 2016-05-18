@@ -7,6 +7,9 @@ then
 else
     SRCDIR=/home/vagrant/sync
 fi
+
+echo "  VAGRANT: yes" >> $SRCDIR/pillar.example
+
 sudo mkdir -p /srv/salt
 sudo mkdir -p /srv/pillar
 sudo mkdir -p /srv/formulas

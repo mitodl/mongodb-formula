@@ -1,6 +1,8 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
 
-#DOING: Remove non-clustering flow for now - it just complicates things
+include:
+  - .service
+
 copy_mongodb_key_file:
   file.managed:
     - name: {{ mongodb.cluster_key_file }}
@@ -8,27 +10,19 @@ copy_mongodb_key_file:
     - owner: mongodb
     - group: mongodb
     - mode: 0600
-    - require:
-      - pkg: install_packages
-
-stop_mongodb_service:
-  service.dead:
-    - running: True
-    - name: mongodb
-    - enable: True
-    - require:
-      - pkg: install_packages
 
 place_mongodb_config_file:
   file.managed:
-    - name: /etc/mongod.conf
+    - name: /etc/mongodb.conf
     - template: jinja
-    - source: salt://mongodb/templates/mongod.conf.j2
+    - source: salt://mongodb/templates/mongodb.conf.j2
+    - require:
+      - file: copy_mongodb_key_file
+    - require_in:
+      - service: mongodb_service_running
     - watch_in:
-      - service: stop_mongodb_service
-      - service: start_mongodb_service
+      - service: mongodb_service_running
 
-#DOING: Wait for salt to start up again
 wait_for_mongo:
   cmd.run:
     - name: |
@@ -40,33 +34,83 @@ wait_for_mongo:
     - timeout: 60
     - require:
       - file: place_mongodb_config_file
+      - service: mongodb_service_running
 
-#DOING: Create the super user
-add_admin_user:
-  mongodb_user.present:
-    - name: {{ salt.pillar.get('mongodb:admin_username') }}
-    - passwd: {{ salt.pillar.get('mongodb:admin_password') }}
-    - database: admin
-    - host: localhost
-    - port: {{ mongodb.port }}
+{% if 'mongodb_primary' in grains['roles'] %}
+
+{% if salt.pillar.get("mongodb:VAGRANT", false) %}
+{% do replset_config['members'].append({'_id': 0, 'host': '192.168.33.10:' + mongodb.port}) %}
+{% else %}
+{% set member_id = 0 %}
+{% for id, addrs in salt['mine.get']('roles:mongodb', 'network.get_hostname', expr_form='grain').items() %}
+{% do replset_config['members'].append({'_id': member_id, 'host': id}) %}
+{% set member_id = member_id + 1 %}
+{% endfor %}
+{% endif %}
+
+initiate_replset:
+  cmd.run:
+    - name: >
+        mongo --eval "printjson(rs.initiate({{ replset_config }}))"
+    - onlyif: "[ `mongo --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
+    - shell: /bin/bash
     - require:
-      - pkg: install_packages
-      - file: place_mongodb_config_file
+        - cmd: wait_for_mongo
+
+wait_for_initialization:
+  cmd.run:
+    - name: |
+        until [ `mongo --eval 'printjson(rs.config())' | grep -i initializing | wc -l` -eq 0 ]
+        do
+          sleep 1
+        done
+        sleep 5 # Add a brief extra wait for things to settle
+    - shell: /bin/bash
+    - timeout: 60
+    - require:
+        - cmd: initiate_replset
+
+place_root_user_script:
+  file.managed:
+    - name: /tmp/create_root.js
+    - source: salt://mongodb/templates/create_root.js.j2
+    - template: jinja
+
+execute_root_user_script:
+  cmd.run:
+    - name: /usr/bin/mongo --port {{ mongodb.port }} /tmp/create_root.js
+    - require:
+      - file: place_root_user_script
       - cmd: wait_for_mongo
+      - cmd: execute_repset_script
 
-#TODO: Initialize the repset
-
-#DOING: Create users from list of user
 {% for user in salt.pillar.get('mongodb:users', {}) %}
-add_admin_user:
+add_{{ user.name }}_user:
   mongodb_user.present:
-    - name: {{ user.user }}
+    - name: {{ user.name }}
     - passwd: {{ user.password }}
     - database: {{ user.database }}
     - host: localhost
     - port: {{ mongodb.port }}
     - require:
-      - pkg: install_packages
       - file: place_mongodb_config_file
       - cmd: wait_for_mongo
 {% endfor %}
+
+place_repset_script:
+  file.managed:
+    - name: /tmp/repset_init.js
+    - source: salt://mongodb/templates/repset_init.js.j2
+    - onlyif: "[ `mongo --port {{ mongodb.port }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
+    - template: jinja
+    - context:
+      - replset_config: {{ replset_config }}
+
+execute_repset_script:
+  cmd.run:
+    - name: /usr/bin/mongo --port {{ mongodb.port }} /tmp/repset_init.js
+    - require:
+      - file: place_repset_script
+      - cmd: wait_for_mongo
+      - cmd: execute_root_user_script
+{% endif %}
