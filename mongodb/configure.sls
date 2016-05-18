@@ -39,7 +39,7 @@ wait_for_mongo:
     - shell: /bin/bash
     - timeout: 60
     - require:
-        - file: place_mongodb_config_file
+      - file: place_mongodb_config_file
 
 #DOING: Create the super user
 add_admin_user:
@@ -50,10 +50,23 @@ add_admin_user:
     - host: localhost
     - port: {{ mongodb.port }}
     - require:
-        - cmd: wait_for_initialization
-        - cmd: initiate_replset
-        - pkg: python-pymongo
+      - pkg: install_packages
+      - file: place_mongodb_config_file
+      - cmd: wait_for_mongo
 
 #TODO: Initialize the repset
 
-#TODO: Create users from list of users
+#DOING: Create users from list of user
+{% for user in salt.pillar.get('mongodb:users', {}) %}
+add_admin_user:
+  mongodb_user.present:
+    - name: {{ user.user }}
+    - passwd: {{ user.password }}
+    - database: {{ user.database }}
+    - host: localhost
+    - port: {{ mongodb.port }}
+    - require:
+      - pkg: install_packages
+      - file: place_mongodb_config_file
+      - cmd: wait_for_mongo
+{% endfor %}
