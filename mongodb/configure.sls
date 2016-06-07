@@ -26,7 +26,7 @@ place_mongodb_config_file:
 wait_for_mongo:
   cmd.run:
     - name: |
-        until [ `netstat -tunlp | grep {{ mongodb.port }} | wc -l` -eq 1 ]
+        until [ `netstat -tunlp | grep {{ mongodb.port }} | wc -l` -ge 1 ]
         do
           sleep 1
         done
@@ -38,6 +38,7 @@ wait_for_mongo:
 
 {% if 'mongodb_primary' in grains['roles'] %}
 
+{% set replset_config = {'_id': salt['pillar.get']('mongodb:replset_name', 'rs0'), 'members': []} %}
 {% if salt.pillar.get("mongodb:VAGRANT", false) %}
 {% do replset_config['members'].append({'_id': 0, 'host': '192.168.33.10:' + mongodb.port}) %}
 {% else %}
@@ -48,11 +49,13 @@ wait_for_mongo:
 {% endfor %}
 {% endif %}
 
+{% set mongo_cmd = '/usr/bin/mongo --port ' + mongodb.port %}
+
 initiate_replset:
   cmd.run:
     - name: >
-        mongo --eval "printjson(rs.initiate({{ replset_config }}))"
-    - onlyif: "[ `mongo --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
+        {{ mongo_cmd }} --eval "printjson(rs.initiate({{ replset_config }}))"
+    - onlyif: "[ `{{ mongo_cmd }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
     - shell: /bin/bash
     - require:
         - cmd: wait_for_mongo
@@ -60,7 +63,7 @@ initiate_replset:
 wait_for_initialization:
   cmd.run:
     - name: |
-        until [ `mongo --eval 'printjson(rs.config())' | grep -i initializing | wc -l` -eq 0 ]
+        until [ `{{ mongo_cmd }} --eval 'printjson(rs.config())' | grep -i initializing | wc -l` -eq 0 ]
         do
           sleep 1
         done
@@ -78,11 +81,10 @@ place_root_user_script:
 
 execute_root_user_script:
   cmd.run:
-    - name: /usr/bin/mongo --port {{ mongodb.port }} /tmp/create_root.js
+    - name: {{ mongo_cmd }} /tmp/create_root.js
     - require:
       - file: place_root_user_script
       - cmd: wait_for_mongo
-      - cmd: execute_repset_script
 
 {% for user in salt.pillar.get('mongodb:users', {}) %}
 add_{{ user.name }}_user:
@@ -101,14 +103,12 @@ place_repset_script:
   file.managed:
     - name: /tmp/repset_init.js
     - source: salt://mongodb/templates/repset_init.js.j2
-    - onlyif: "[ `mongo --port {{ mongodb.port }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
+    - onlyif: "[ `{{ mongo_cmd }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
     - template: jinja
-    - context:
-      - replset_config: {{ replset_config }}
 
 execute_repset_script:
   cmd.run:
-    - name: /usr/bin/mongo --port {{ mongodb.port }} /tmp/repset_init.js
+    - name: {{ mongo_cmd }} /tmp/repset_init.js
     - require:
       - file: place_repset_script
       - cmd: wait_for_mongo
