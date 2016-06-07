@@ -3,17 +3,18 @@
       'key': '7F0CEB10',
       'keyserver': 'keyserver.ubuntu.com',
       'pkgs': [
-        {'mongodb-10gen': '2.6'},
+        {'mongodb-10gen': '2.4.*'},
       ],
       'pip_pkgs': [
         'pymongo',
       ],
       'cluster_key_file': '/etc/mongodb_key',
       'bind_ip': '127.0.0.1',
-      'port': 12017,
+      'port': '12017',
       'enable_journal': True,
-      'repl_set': 'rs0',
       'install_pkgrepo': true,
+      'dbpath': '/var/lib/mongodb',
+      'logpath': '/var/log/mongodb/mongodb.log',
     },
     'Debian': {
       'repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',
