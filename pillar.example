@@ -7,6 +7,7 @@ mongodb:
     install:
   admin_username: admin
   admin_password: password
+  replset_name: rs0
   cluster_key: |
     W9MAi8JEUhOYOl6aFibIiu0rqM7jVreNqZCqKMLE71eT/suAkCrpoeAcAxqbWmkh
     TT0jfCE/JejwUsaS9wlmvfcRW5EtrMBHfnCtBhgNtSLXVcWfY/CgEmNSFTzInCUp

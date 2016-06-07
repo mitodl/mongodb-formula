@@ -4,8 +4,8 @@
    otherwise only to the specified local ip.
 #}
 
-dbpath = /var/lib/mongodb
-logpath = /var/log/mongodb/mongodb.log
+dbpath = {{ mongodb.dbpath }}
+logpath =  {{ mongodb.logpath }}
 logappend = true
 
 port = {{ mongodb.port }}
@@ -19,4 +19,4 @@ nojournal = true
 {% endif %}
 
 keyFile = {{ mongodb.cluster_key_file }}
-replSet = {{ mongodb.repl_set }}
+replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
