@@ -18,20 +18,24 @@ if(rs.isMaster().ismaster) {
     db.auth( '{{ MONGO_ADMIN_USER }}', '{{ MONGO_ADMIN_PASSWORD }}');
 
     if(db.getUser("{{ MONGO_ADMIN_USER }}") == null) {
-        db.createUser(
+        db.addUser(
             {
                 "user": "{{ MONGO_ADMIN_USER }}",
                 "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
-                "roles": ["root"]
+                "roles": ['root', 'dbAdminAnyDatabase', 'clusterAdmin']
             }
         );
     } else {
-        db.updateUser(
+        db.system.users.update(
+            {"{{ MONGO_ADMIN_USER }}" : "{{ MONGO_ADMIN_PASSWORD }}"},
+            {$addToSet: {'roles': ['root', 'dbAdminAnyDatabase', 'clusterAdmin']}}
+        );
+        /* db.updateUser(
             "{{ MONGO_ADMIN_USER }}",
             {
                 "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
                 "roles": ["root"]
             }
-        );
+        ); */
     }
 }

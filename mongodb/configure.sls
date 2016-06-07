@@ -67,7 +67,7 @@ wait_for_initialization:
         do
           sleep 1
         done
-        sleep 5 # Add a brief extra wait for things to settle
+        sleep 20 # Add a brief extra wait for things to settle
     - shell: /bin/bash
     - timeout: 60
     - require:
@@ -92,11 +92,12 @@ add_{{ user.name }}_user:
     - name: {{ user.name }}
     - passwd: {{ user.password }}
     - database: {{ user.database }}
+    - user: {{ salt.pillar.get('mongodb:admin_username') }}
+    - password: {{ salt.pillar.get('mongodb:admin_password') }}
     - host: localhost
     - port: {{ mongodb.port }}
     - require:
-      - file: place_mongodb_config_file
-      - cmd: wait_for_mongo
+      - cmd: execute_root_user_script
 {% endfor %}
 
 place_repset_script:
