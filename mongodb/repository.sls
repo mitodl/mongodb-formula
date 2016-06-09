@@ -15,7 +15,6 @@ add_mongodb_package_repository:
     - humanname: MongoDB Repository
     {% if os_family == 'Debian' %}
     - name: {{ mongodb.repo }}
-    - dist: {{ mongodb.repo_dist }}
     {% elif os_family == 'RedHat' %}
     - name: MongoDB Repository
     - baseurl: {{ mongodb.repo }}
