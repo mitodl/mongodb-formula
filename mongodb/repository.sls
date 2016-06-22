@@ -27,6 +27,3 @@ add_mongodb_package_repository:
     - require_in:
       - install_packages
 {% endif %}
-
-include:
-  - .install
