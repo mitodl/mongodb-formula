@@ -1,14 +1,25 @@
 {% set mongodb = salt['grains.filter_by']({
     'default': {
-        'pkg': 'mongodb',
-        'service': 'mongodb',
-        'conf_file': '/etc/mongodb/mongodb.conf',
-        'config': {
-            'key': 'value',
-        },
+      'key': '7F0CEB10',
+      'keyserver': 'keyserver.ubuntu.com',
+      'pkgs': [
+        'mongodb-org',
+      ],
+      'pip_pkgs': [
+        'pymongo',
+      ],
+      'cluster_key_file': '/etc/mongodb_key',
+      'bind_ip': '127.0.0.1',
+      'port': '27017',
+      'enable_journal': True,
+      'install_pkgrepo': true,
+      'dbpath': '/var/lib/mongodb',
+      'logpath': '/var/log/mongodb/mongodb.log',
     },
     'Debian': {
+      'repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',
     },
     'RedHat': {
+      'repo': 'http://downloads-distro.mongodb.org/repo/redhat/os/$basearch/',
     },
-}, grain='os_family', merge=salt['pillar.get']('mongodb:lookup'), base='default') %}
+}, grain='os_family', merge=salt['pillar.get']('mongodb:overrides'), base='default') %}

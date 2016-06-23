@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 if [ "$(ls /vagrant)" ]
 then
@@ -6,11 +7,14 @@ then
 else
     SRCDIR=/home/vagrant/sync
 fi
+
+echo "  VAGRANT: yes" >> $SRCDIR/pillar.example
+
 sudo mkdir -p /srv/salt
 sudo mkdir -p /srv/pillar
 sudo mkdir -p /srv/formulas
 sudo cp $SRCDIR/pillar.example /srv/pillar/pillar.sls
-sudo cp -r $SRCDIR/mongodb /srv/salt
+sudo cp -vR $SRCDIR/mongodb /srv/salt
 echo "\
 base:
   '*':
@@ -18,4 +22,5 @@ base:
 echo "\
 base:
   '*':
-    - mongodb" | sudo tee /srv/salt/top.sls
+    - mongodb
+    - mongodb.tests" | sudo tee /srv/salt/top.sls
