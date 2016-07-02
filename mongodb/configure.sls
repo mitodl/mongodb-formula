@@ -43,8 +43,9 @@ wait_for_mongo:
 {% do replset_config['members'].append({'_id': 0, 'host': '192.168.33.10:' + mongodb.port}) %}
 {% else %}
 {% set member_id = 0 %}
-{% for id, addrs in salt['mine.get']('roles:mongodb', 'network.get_hostname', expr_form='grain').items() %}
-{% do replset_config['members'].append({'_id': member_id, 'host': id}) %}
+{% set eth0_index = 0 %}
+{% for id, addrs in salt.mine.get('roles:mongodb', 'network.ip_addrs', expr_form='grain').items() %}
+{% do replset_config['members'].append({'_id': member_id, 'host': addrs[eth0_index] }) %}
 {% set member_id = member_id + 1 %}
 {% endfor %}
 {% endif %}
