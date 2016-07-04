@@ -1,6 +1,4 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
-{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
-{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
 
 conn = new Mongo("localhost:{{ mongodb.port }}");
 db = conn.getDB("admin");

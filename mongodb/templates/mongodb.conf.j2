@@ -18,6 +18,3 @@ journal = true
 journal = false
 nojournal = true
 {% endif %}
-
-keyFile = {{ mongodb.cluster_key_file }}
-replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}

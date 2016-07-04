@@ -18,22 +18,7 @@ place_mongodb_config_file:
     - source: salt://mongodb/templates/mongodb.conf.j2
     - require:
       - file: copy_mongodb_key_file
-    - require_in:
-      - service: mongodb_service_running
     - watch_in:
-      - service: mongodb_service_running
-
-wait_for_mongo:
-  cmd.run:
-    - name: |
-        until [ `netstat -tunlp | grep {{ mongodb.port }} | wc -l` -ge 1 ]
-        do
-          sleep 1
-        done
-    - shell: /bin/bash
-    - timeout: 60
-    - require:
-      - file: place_mongodb_config_file
       - service: mongodb_service_running
 
 {% if 'mongodb_primary' in grains['roles'] %}
@@ -50,35 +35,18 @@ wait_for_mongo:
 {% endfor %}
 {% endif %}
 
+{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
+{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
 {% set mongo_cmd = '/usr/bin/mongo --port ' + mongodb.port %}
-
-initiate_replset:
-  cmd.run:
-    - name: >
-        {{ mongo_cmd }} --eval "printjson(rs.initiate({{ replset_config }}))"
-    - onlyif: "[ `{{ mongo_cmd }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
-    - shell: /bin/bash
-    - require:
-        - cmd: wait_for_mongo
-
-wait_for_initialization:
-  cmd.run:
-    - name: |
-        until [ `{{ mongo_cmd }} --eval 'printjson(rs.config())' | grep -i initializing | wc -l` -eq 0 ]
-        do
-          sleep 1
-        done
-        sleep 5 # Add a brief extra wait for things to settle
-    - shell: /bin/bash
-    - timeout: 60
-    - require:
-        - cmd: initiate_replset
 
 place_root_user_script:
   file.managed:
     - name: /tmp/create_root.js
     - source: salt://mongodb/templates/create_root.js.j2
     - template: jinja
+    - context:
+        MONGO_ADMIN_USER: {{ MONGO_ADMIN_USER }}
+        MONGO_ADMIN_PASSWORD: {{ MONGO_ADMIN_PASSWORD }}
 
 execute_root_user_script:
   cmd.run:
@@ -86,6 +54,10 @@ execute_root_user_script:
     - require:
       - file: place_root_user_script
       - cmd: wait_for_mongo
+    - require:
+        - service: mongodb_service_running
+    - require_in:
+        - file: configure_keyfile_and_replicaset
 
 {% for user in salt.pillar.get('mongodb:users', {}) %}
 add_{{ user.name }}_user:
@@ -97,21 +69,75 @@ add_{{ user.name }}_user:
     - port: {{ mongodb.port }}
     - require:
       - file: place_mongodb_config_file
-      - cmd: wait_for_mongo
+      - cmd: execute_root_user_script
+    - require_in:
+        - file: configure_keyfile_and_replicaset
 {% endfor %}
+
+initiate_replset:
+  cmd.run:
+    - name: >-
+        {{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
+        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
+        --eval "printjson(rs.initiate({{ replset_config }}))"
+    - onlyif: >-
+        test -n "$({{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
+        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
+        --eval 'printjson(rs.status())' | grep -i 'errmsg')"
+    - shell: /bin/bash
+    - require:
+        - cmd: execute_root_user_script
+        - file: configure_keyfile_and_replicaset
+        - service: configure_keyfile_and_replicaset
+
+wait_for_initialization:
+  cmd.run:
+    - name: |
+        until [ `{{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }} \
+        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin \
+        --eval 'printjson(rs.config())' | grep -i initializing | wc -l` -eq 0 ]
+        do
+          sleep 1
+        done
+        sleep 5 # Add a brief extra wait for things to settle
+    - shell: /bin/bash
+    - timeout: 60
+    - require:
+        - cmd: initiate_replset
 
 place_repset_script:
   file.managed:
     - name: /tmp/repset_init.js
     - source: salt://mongodb/templates/repset_init.js.j2
-    - onlyif: "[ `{{ mongo_cmd }} --eval 'printjson(rs.status())' | grep -i 'errmsg' | wc -l` -eq 1 ]"
+    - onlyif: >-
+        test -n "$({{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
+        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
+        --eval 'printjson(rs.status())' | grep -i 'errmsg')"
     - template: jinja
+    - context:
+        MONGO_ADMIN_USER: {{ MONGO_ADMIN_USER }}
+        MONGO_ADMIN_PASSWORD: {{ MONGO_ADMIN_PASSWORD }}
 
 execute_repset_script:
   cmd.run:
-    - name: {{ mongo_cmd }} /tmp/repset_init.js
+    - name: >-
+        {{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
+        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
+        /tmp/repset_init.js
     - require:
       - file: place_repset_script
-      - cmd: wait_for_mongo
-      - cmd: execute_root_user_script
+      - cmd: wait_for_initialization
+      - cmd: initiate_replset
 {% endif %}
+
+configure_keyfile_and_replicaset:
+  file.append:
+    - name: /etc/mongod.conf
+    - text: |
+        keyFile = {{ mongodb.cluster_key_file }}
+        replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
+  service.running:
+    - name: mongod
+    - enable: True
+    - watch:
+        - file: configure_keyfile_and_replicaset
