@@ -104,30 +104,6 @@ wait_for_initialization:
     - timeout: 60
     - require:
         - cmd: initiate_replset
-
-place_repset_script:
-  file.managed:
-    - name: /tmp/repset_init.js
-    - source: salt://mongodb/templates/repset_init.js.j2
-    - onlyif: >-
-        test -n "$({{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
-        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
-        --eval 'printjson(rs.status())' | grep -i 'errmsg')"
-    - template: jinja
-    - context:
-        MONGO_ADMIN_USER: {{ MONGO_ADMIN_USER }}
-        MONGO_ADMIN_PASSWORD: {{ MONGO_ADMIN_PASSWORD }}
-
-execute_repset_script:
-  cmd.run:
-    - name: >-
-        {{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
-        --password {{ MONGO_ADMIN_PASSWORD|trim }} --authenticationDatabase admin
-        /tmp/repset_init.js
-    - require:
-      - file: place_repset_script
-      - cmd: wait_for_initialization
-      - cmd: initiate_replset
 {% endif %}
 
 configure_keyfile_and_replicaset:
