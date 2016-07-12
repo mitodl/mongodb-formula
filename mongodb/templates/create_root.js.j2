@@ -9,7 +9,7 @@ if(!db.auth('{{ MONGO_ADMIN_USER|trim }}', '{{ MONGO_ADMIN_PASSWORD|trim }}')) {
         {
             "user": "{{ MONGO_ADMIN_USER|trim }}",
             "pwd": "{{ MONGO_ADMIN_PASSWORD|trim }}",
-            "roles": ["root"]
+            "roles": [{role: "root", database: "admin"}]
         }
     );
 } else {
@@ -17,7 +17,7 @@ if(!db.auth('{{ MONGO_ADMIN_USER|trim }}', '{{ MONGO_ADMIN_PASSWORD|trim }}')) {
         "{{ MONGO_ADMIN_USER|trim }}",
         {
             "pwd": "{{ MONGO_ADMIN_PASSWORD|trim }}",
-            "roles": ["root"]
+            "roles": [{role: "root", database: "admin"}]
         }
     );
 }
