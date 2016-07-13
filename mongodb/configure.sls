@@ -37,7 +37,7 @@ place_mongodb_config_file:
 
 {% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
 {% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
-{% set mongo_cmd = '/usr/bin/mongo --port ' + mongodb.port %}
+{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
 
 place_root_user_script:
   file.managed:
