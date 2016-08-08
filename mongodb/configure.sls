@@ -60,7 +60,7 @@ execute_root_user_script:
         - file: configure_keyfile_and_replicaset
 
 {% for user in salt.pillar.get('mongodb:users', {}) %}
-add_{{ user.name }}_user:
+add_{{ user.name }}_user_to_{{ user.database }}:
   mongodb_user.present:
     - name: {{ user.name }}
     - passwd: {{ user.password }}
