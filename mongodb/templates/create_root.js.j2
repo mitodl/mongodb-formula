@@ -4,29 +4,29 @@
 conn = new Mongo("localhost:{{ mongodb.port }}");
 db = conn.getDB("admin");
 
-db.createRole(
-    {
-        role: "superuser",
-        privileges: [
-            {
-                resource: {
-                    anyResource: true
-                },
-                actions: ["anyAction"]
-            }
-        ],
-        roles: []
-    }
-);
-
 if(!db.auth('{{ MONGO_ADMIN_USER|trim }}', '{{ MONGO_ADMIN_PASSWORD|trim }}')) {
     db.createUser(
         {
             "user": "{{ MONGO_ADMIN_USER|trim }}",
             "pwd": "{{ MONGO_ADMIN_PASSWORD|trim }}",
-            "roles": ["root", "superuser"]
+            "roles": ["root"]
         }
     );
+    db.createRole(
+        {
+            role: "superuser",
+            privileges: [
+                {
+                    resource: {
+                        anyResource: true
+                    },
+                    actions: ["anyAction"]
+                }
+            ],
+            roles: []
+        }
+    );
+    db.grantRolesToUser("admin", ["root", "superuser"]);
 } else {
     db.updateUser(
         "{{ MONGO_ADMIN_USER|trim }}",
