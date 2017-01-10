@@ -26,8 +26,8 @@
     'keyserver': 'keyserver.ubuntu.com',
     'repo': 'deb http://repo.mongodb.org/apt/ubuntu {0}/mongodb-org/{1} multiverse'.format(grains['oscodename'], version),
   },
-  'RedHat': {
+  'RedHat' or 'CentOS': {
       'gpgkey': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
       'repo': 'https://repo.mongodb.org/yum/{0}/$releasever/mongodb-org/{1}/{2}/'.format(grains['os_family'], version, grains['osarch']),
     },
-}, grain='os_family', merge=salt.pillar.get('mongodb:overrides'), base='default') %}
+}, grain='osfullname', merge=salt.pillar.get('mongodb:overrides'), base='default') %}

@@ -1,4 +1,5 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
+{% from "mongodb/map.jinja" import vagrant_host with context %}
 
 include:
   - .service
@@ -25,7 +26,7 @@ place_mongodb_config_file:
 
 {% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
 {% if salt.pillar.get("mongodb:VAGRANT", false) %}
-{% do replset_config['members'].append({'_id': 0, 'host': salt.pillar.get('mongodb:vagrant_host') + ':' + mongodb.port}) %}
+{% do replset_config['members'].append({'_id': 0, 'host': vagrant_host + ':' + mongodb.port}) %}
 {% else %}
 {% set member_id = 0 %}
 {% set eth0_index = 0 %}
