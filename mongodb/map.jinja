@@ -1,25 +1,33 @@
-{% set mongodb = salt['grains.filter_by']({
-    'default': {
-      'key': '7F0CEB10',
-      'keyserver': 'keyserver.ubuntu.com',
-      'pkgs': [
-        'mongodb-org',
-      ],
-      'pip_pkgs': [
-        'pymongo',
-      ],
-      'cluster_key_file': '/etc/mongodb_key',
-      'bind_ip': '127.0.0.1',
-      'port': 27017,
-      'enable_journal': True,
-      'install_pkgrepo': true,
-      'dbpath': '/var/lib/mongodb',
-      'logpath': '/var/log/mongodb/mongodb.log',
+{% set version = salt.pillar.get('mongodb:version', '3.4') %}
+{% set vagrant_host = salt.pillar.get('mongodb:vagrant_host', '192.168.33.10') %}
+{% set mongodb = salt.grains.filter_by({
+  'default': {
+    'pkgs': [
+      'mongodb-org',
+    ],
+    'pip_pkgs': [
+      'pymongo',
+    ],
+    'cluster_key_file': '/etc/mongodb_key',
+    'bind_ip': '127.0.0.1',
+    'port': '27017',
+    'enable_journal': True,
+    'install_pkgrepo': true,
+    'dbpath': '/var/lib/mongodb',
+    'logpath': '/var/log/mongodb/mongodb.log',
+  },
+  'Debian': {
+    'key': '0C49F3730359A14518585931BC711F9BA15703C6',
+    'keyserver': 'keyserver.ubuntu.com',
+    'repo': 'deb http://repo.mongodb.org/apt/debian {0}/mongodb-org/{1} main'.format(grains['oscodename'], version),
+  },
+  'Ubuntu': {
+    'key': '0C49F3730359A14518585931BC711F9BA15703C6',
+    'keyserver': 'keyserver.ubuntu.com',
+    'repo': 'deb http://repo.mongodb.org/apt/ubuntu {0}/mongodb-org/{1} multiverse'.format(grains['oscodename'], version),
+  },
+  'RedHat' or 'CentOS': {
+      'gpgkey': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
+      'repo': 'https://repo.mongodb.org/yum/{0}/$releasever/mongodb-org/{1}/{2}/'.format(grains['os_family'], version, grains['osarch']),
     },
-    'Debian': {
-      'repo': 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen',
-    },
-    'RedHat': {
-      'repo': 'http://downloads-distro.mongodb.org/repo/redhat/os/$basearch/',
-    },
-}, grain='os_family', merge=salt['pillar.get']('mongodb:overrides'), base='default') %}
+}, grain='osfullname', merge=salt.pillar.get('mongodb:overrides'), base='default') %}

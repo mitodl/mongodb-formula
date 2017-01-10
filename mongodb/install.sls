@@ -17,3 +17,4 @@ install_pip_package:
     - pkgs: {{ mongodb.pip_pkgs }}
     - require:
       - pkgrepo: add_mongodb_package_repository
+    - reload_modules: True

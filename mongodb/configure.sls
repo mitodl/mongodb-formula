@@ -1,4 +1,5 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
+{% from "mongodb/map.jinja" import vagrant_host with context %}
 
 include:
   - .service
@@ -23,9 +24,9 @@ place_mongodb_config_file:
 
 {% if 'mongodb_primary' in grains['roles'] %}
 
-{% set replset_config = {'_id': salt['pillar.get']('mongodb:replset_name', 'rs0'), 'members': []} %}
+{% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
 {% if salt.pillar.get("mongodb:VAGRANT", false) %}
-{% do replset_config['members'].append({'_id': 0, 'host': '192.168.33.10:' + mongodb.port}) %}
+{% do replset_config['members'].append({'_id': 0, 'host': vagrant_host + ':' + mongodb.port}) %}
 {% else %}
 {% set member_id = 0 %}
 {% set eth0_index = 0 %}
@@ -88,7 +89,7 @@ initiate_replset:
     - require:
         - cmd: execute_root_user_script
         - file: configure_keyfile_and_replicaset
-        - service: configure_keyfile_and_replicaset
+        - service: mongodb_service_running
 
 wait_for_initialization:
   cmd.run:

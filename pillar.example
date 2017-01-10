@@ -30,3 +30,5 @@ mongodb:
       password: password
       database: my_app
       roles: readWrite
+  version: '3.4'
+  vagrant_host: '192.168.33.10'
