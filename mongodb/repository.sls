@@ -4,7 +4,7 @@
 {% if os_family == 'RedHat' %}
 install_mongodb_gpg_key:
   cmd.run:
-    - name: rpm --import https://www.mongodb.org/static/pgp/server-3.2.asc
+    - name: rpm --import {{ mongodb.gpg_key }}
     - require_in:
       - pkgrepo: add_mongodb_package_repository
 {% endif %}
