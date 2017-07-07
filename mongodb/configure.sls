@@ -54,9 +54,7 @@ execute_root_user_script:
     - name: {{ mongo_cmd }} /tmp/create_root.js
     - require:
       - file: place_root_user_script
-      - cmd: wait_for_mongo
-    - require:
-        - service: mongodb_service_running
+      - service: mongodb_service_running
     - require_in:
         - file: configure_keyfile_and_replicaset
 
