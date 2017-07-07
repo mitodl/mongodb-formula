@@ -113,8 +113,5 @@ configure_keyfile_and_replicaset:
     - text: |
         keyFile = {{ mongodb.cluster_key_file }}
         replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
-  service.running:
-    - name: mongod
-    - enable: True
-    - watch:
-        - file: configure_keyfile_and_replicaset
+    - watch_in:
+        - service: mongodb_service_running
