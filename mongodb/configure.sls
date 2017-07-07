@@ -56,7 +56,7 @@ execute_root_user_script:
       - file: place_root_user_script
       - service: mongodb_service_running
     - require_in:
-        - file: configure_keyfile_and_replicaset
+      - file: configure_keyfile_and_replicaset
 
 {% for user in salt.pillar.get('mongodb:users', {}) %}
 add_{{ user.name }}_user_to_{{ user.database }}:
@@ -86,7 +86,7 @@ initiate_replset:
     - shell: /bin/bash
     - require:
         - cmd: execute_root_user_script
-        - file: configure_keyfile_and_replicaset
+        - service: configure_keyfile_and_replicaset
         - service: mongodb_service_running
 
 wait_for_initialization:
@@ -111,5 +111,7 @@ configure_keyfile_and_replicaset:
     - text: |
         keyFile = {{ mongodb.cluster_key_file }}
         replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
-    - watch_in:
-        - service: mongodb_service_running
+  service.running:
+    - name: {{ mongodb.service_name }}
+    - watch:
+        - file: configure_keyfile_and_replicaset
