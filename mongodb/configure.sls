@@ -113,5 +113,6 @@ configure_keyfile_and_replicaset:
         replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
   service.running:
     - name: {{ mongodb.service_name }}
+    - init_delay: 10
     - watch:
         - file: configure_keyfile_and_replicaset
