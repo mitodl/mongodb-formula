@@ -77,11 +77,11 @@ initiate_replset:
   cmd.run:
     - name: >-
         {{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
-        --password '{{ MONGO_ADMIN_PASSWORD|trim }}' --authenticationDatabase admin
+        --password='{{ MONGO_ADMIN_PASSWORD|trim }}' --authenticationDatabase admin
         --eval "printjson(rs.initiate({{ replset_config }}))"
     - onlyif: >-
         {{ mongo_cmd }} --username {{ MONGO_ADMIN_USER|trim }}
-        --password '{{ MONGO_ADMIN_PASSWORD|trim }}' --authenticationDatabase admin
+        --password='{{ MONGO_ADMIN_PASSWORD|trim }}' --authenticationDatabase admin
         --eval 'printjson(rs.status())' | grep -i 'errmsg' | test -n
     - shell: /bin/bash
     - require:
