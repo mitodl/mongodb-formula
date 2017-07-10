@@ -14,7 +14,7 @@ copy_mongodb_key_file:
 
 place_mongodb_config_file:
   file.managed:
-    - name: /etc/mongod.conf
+    - name: /etc/{{ mongodb.service_name }}.conf
     - template: jinja
     - source: salt://mongodb/templates/mongodb.conf.j2
     - require:
