@@ -107,7 +107,7 @@ wait_for_initialization:
 
 configure_keyfile_and_replicaset:
   file.append:
-    - name: /etc/mongod.conf
+    - name: /etc/{{ mongodb.service_name }}.conf
     - text: |
         keyFile = {{ mongodb.cluster_key_file }}
         replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
