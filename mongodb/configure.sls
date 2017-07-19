@@ -22,6 +22,10 @@ place_mongodb_config_file:
     - watch_in:
       - service: mongodb_service_running
 
+{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
+{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
+{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
+
 {% if 'mongodb_primary' in grains['roles'] %}
 
 {% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
@@ -35,10 +39,6 @@ place_mongodb_config_file:
 {% set member_id = member_id + 1 %}
 {% endfor %}
 {% endif %}
-
-{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
-{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
-{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
 
 place_root_user_script:
   file.managed:
