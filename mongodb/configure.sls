@@ -54,7 +54,7 @@ add_{{ user.name }}_user_to_{{ user.database }}:
 copy_mongodb_key_file:
   file.managed:
     - name: {{ mongodb.cluster_key_file }}
-    - contents: "{{ salt.pillar.get('mongodb:cluster_key') }}"
+    - contents: "{{ mongodb_cluster_key }}"
     - owner: mongodb
     - group: mongodb
     - mode: 0600
