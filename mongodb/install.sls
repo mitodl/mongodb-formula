@@ -10,7 +10,6 @@ install_packages:
     - install_recommends: True
     - require_in:
       - service: mongodb_service_running
-      - file: copy_mongodb_key_file
 
 install_pip_package:
   pip.installed:

@@ -4,13 +4,9 @@
 include:
   - .service
 
-copy_mongodb_key_file:
-  file.managed:
-    - name: {{ mongodb.cluster_key_file }}
-    - contents: "{{ salt.pillar.get('mongodb:cluster_key') }}"
-    - owner: mongodb
-    - group: mongodb
-    - mode: 0600
+{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
+{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
+{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
 
 place_mongodb_config_file:
   file.managed:
@@ -21,24 +17,6 @@ place_mongodb_config_file:
       - file: copy_mongodb_key_file
     - watch_in:
       - service: mongodb_service_running
-
-{% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
-{% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
-{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
-
-{% if 'mongodb_primary' in grains['roles'] %}
-
-{% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
-{% if salt.pillar.get("mongodb:VAGRANT", false) %}
-{% do replset_config['members'].append({'_id': 0, 'host': vagrant_host + ':' + mongodb.port}) %}
-{% else %}
-{% set member_id = 0 %}
-{% set eth0_index = 0 %}
-{% for id, addrs in salt.mine.get('G@roles:mongodb and G@environment:{0}'.format(salt.grains.get('environment')), 'network.ip_addrs', expr_form='compound').items() %}
-{% do replset_config['members'].append({'_id': member_id, 'host': addrs[eth0_index] }) %}
-{% set member_id = member_id + 1 %}
-{% endfor %}
-{% endif %}
 
 place_root_user_script:
   file.managed:
@@ -73,6 +51,28 @@ add_{{ user.name }}_user_to_{{ user.database }}:
         - file: configure_keyfile_and_replicaset
 {% endfor %}
 
+{% if 'mongodb_primary' in grains['roles'] %}
+
+{% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
+{% if salt.pillar.get("mongodb:VAGRANT", false) %}
+{% do replset_config['members'].append({'_id': 0, 'host': vagrant_host + ':' + mongodb.port}) %}
+{% else %}
+{% set member_id = 0 %}
+{% set eth0_index = 0 %}
+{% for id, addrs in salt.mine.get('G@roles:mongodb and G@environment:{0}'.format(salt.grains.get('environment')), 'network.ip_addrs', expr_form='compound').items() %}
+{% do replset_config['members'].append({'_id': member_id, 'host': addrs[eth0_index] }) %}
+{% set member_id = member_id + 1 %}
+{% endfor %}
+{% endif %}
+
+copy_mongodb_key_file:
+  file.managed:
+    - name: {{ mongodb.cluster_key_file }}
+    - contents: "{{ salt.pillar.get('mongodb:cluster_key') }}"
+    - owner: mongodb
+    - group: mongodb
+    - mode: 0600
+
 initiate_replset:
   cmd.run:
     - name: >-
@@ -103,7 +103,6 @@ wait_for_initialization:
     - timeout: 60
     - require:
         - cmd: initiate_replset
-{% endif %}
 
 configure_keyfile_and_replicaset:
   file.append:
@@ -116,3 +115,4 @@ configure_keyfile_and_replicaset:
     - init_delay: 10
     - watch:
         - file: configure_keyfile_and_replicaset
+{% endif %}
