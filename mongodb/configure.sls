@@ -7,14 +7,13 @@ include:
 {% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
 {% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
 {% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
+{% set mongodb_cluster_key = salt.pillar.get('mongodb:cluster_key') %}
 
 place_mongodb_config_file:
   file.managed:
     - name: /etc/{{ mongodb.service_name }}.conf
     - template: jinja
     - source: salt://mongodb/templates/mongodb.conf.j2
-    - require:
-      - file: copy_mongodb_key_file
     - watch_in:
       - service: mongodb_service_running
 
@@ -51,7 +50,7 @@ add_{{ user.name }}_user_to_{{ user.database }}:
         - file: configure_keyfile_and_replicaset
 {% endfor %}
 
-{% if salt.pillar.get('mongodb:cluster_key') %}
+{% if mongodb_cluster_key %}
 copy_mongodb_key_file:
   file.managed:
     - name: {{ mongodb.cluster_key_file }}
@@ -59,6 +58,8 @@ copy_mongodb_key_file:
     - owner: mongodb
     - group: mongodb
     - mode: 0600
+    - require:
+      - file: place_mongodb_config_file
 {% endif %}
 
 {% if 'mongodb_primary' in grains['roles'] %}
@@ -107,6 +108,7 @@ wait_for_initialization:
         - cmd: initiate_replset
 {% endif %}
 
+{% if mongodb_cluster_key %}
 configure_keyfile_and_replicaset:
   file.append:
     - name: /etc/{{ mongodb.service_name }}.conf
@@ -118,3 +120,4 @@ configure_keyfile_and_replicaset:
     - init_delay: 10
     - watch:
         - file: configure_keyfile_and_replicaset
+{% endif %}
