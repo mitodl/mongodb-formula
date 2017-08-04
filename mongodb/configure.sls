@@ -1,5 +1,4 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
-{% from "mongodb/map.jinja" import vagrant_host with context %}
 
 include:
   - .service
@@ -63,11 +62,7 @@ copy_mongodb_key_file:
 {% if 'mongodb_primary' in grains['roles'] %}
 
 
-{% if salt.pillar.get("mongodb:VAGRANT", false) %}
-{% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': [{'_id': 0, 'host': vagrant_host + ':' + mongodb.port}]} %}
-{% else %}
 {% set replset_config = salt.pillar.get('mongodb:replset_config') %}
-{% endif %}
 
 initiate_replset:
   cmd.run:
