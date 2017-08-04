@@ -1,5 +1,4 @@
 {% set version = salt.pillar.get('mongodb:version', '3.4') %}
-{% set vagrant_host = salt.pillar.get('mongodb:vagrant_host', '192.168.33.10') %}
 {% set mongodb = salt.grains.filter_by({
   'default': {
     'pkgs': [

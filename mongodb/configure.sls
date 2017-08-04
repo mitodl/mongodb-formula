@@ -1,5 +1,4 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
-{% from "mongodb/map.jinja" import vagrant_host with context %}
 
 include:
   - .service
@@ -62,18 +61,8 @@ copy_mongodb_key_file:
 
 {% if 'mongodb_primary' in grains['roles'] %}
 
-{% set replset_config = {'_id': salt.pillar.get('mongodb:replset_name', 'rs0'), 'members': []} %}
-{% if salt.pillar.get("mongodb:VAGRANT", false) %}
-{% do replset_config['members'].append({'_id': 0, 'host': vagrant_host + ':' + mongodb.port}) %}
-{% else %}
-{% set member_id = 0 %}
-{% set eth0_index = 0 %}
-{% set member_addrs = salt.saltutil.runner('mine.get', tgt='G@roles:mongodb and G@environment:{0}'.format(salt.grains.get('environment')), fun='network.ip_addrs', tgt_type='compound') %}
-{% for id, addrs in member_addrs.items() %}
-{% do replset_config['members'].append({'_id': member_id, 'host': addrs[eth0_index] }) %}
-{% set member_id = member_id + 1 %}
-{% endfor %}
-{% endif %}
+
+{% set replset_config = salt.pillar.get('mongodb:replset_config') %}
 
 initiate_replset:
   cmd.run:

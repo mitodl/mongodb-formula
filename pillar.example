@@ -1,3 +1,4 @@
+# -*- mode: yaml -*-
 mine_functions:
   network.ip_addrs: [eth0]
   network.get_hostname: []
@@ -8,6 +9,11 @@ mongodb:
   admin_username: admin
   admin_password: password
   replset_name: rs0
+  replset_config:
+    '_id': rs0
+    members:
+      - '_id': 0
+        host: '192.168.33.10:27027'
   cluster_key: |
     W9MAi8JEUhOYOl6aFibIiu0rqM7jVreNqZCqKMLE71eT/suAkCrpoeAcAxqbWmkh
     TT0jfCE/JejwUsaS9wlmvfcRW5EtrMBHfnCtBhgNtSLXVcWfY/CgEmNSFTzInCUp
@@ -31,4 +37,3 @@ mongodb:
       database: my_app
       roles: readWrite
   version: '3.4'
-  vagrant_host: '192.168.33.10'
