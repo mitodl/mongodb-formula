@@ -50,12 +50,14 @@ add_{{ user.name }}_user_to_{{ user.database }}:
 copy_mongodb_key_file:
   file.managed:
     - name: {{ mongodb.cluster_key_file }}
-    - contents: "{{ mongodb_cluster_key }}"
+    - contents_pillar: 'mongodb:cluster_key'
     - owner: mongodb
     - group: mongodb
     - mode: 0600
     - require:
       - file: place_mongodb_config_file
+    - require_in:
+        - file: configure_keyfile_and_replicaset
 {% endif %}
 
 {% if 'mongodb_primary' in grains['roles'] %}
@@ -86,7 +88,6 @@ initiate_replset:
     - require:
         - cmd: execute_root_user_script
         - service: configure_keyfile_and_replicaset
-        - service: mongodb_service_running
 
 wait_for_initialization:
   cmd.run:
@@ -111,9 +112,6 @@ configure_keyfile_and_replicaset:
     - text: |
         keyFile = {{ mongodb.cluster_key_file }}
         replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
-    - require:
-      - cmd: execute_root_user_script
-      - salt: mongodb_user.present
   service.running:
     - name: {{ mongodb.service_name }}
     - init_delay: 10
