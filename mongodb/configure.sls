@@ -25,12 +25,15 @@ place_root_user_script:
         MONGO_ADMIN_USER: {{ MONGO_ADMIN_USER }}
         MONGO_ADMIN_PASSWORD: {{ MONGO_ADMIN_PASSWORD }}
 
+{% if (mongodb_cluster_key and 'mongodb_primary' in grains['roles'])
+   or not (mongodb_cluster_key) %}
 execute_root_user_script:
   cmd.run:
     - name: {{ mongo_cmd }} /tmp/create_root.js
     - require:
       - file: place_root_user_script
       - service: mongodb_service_running
+{% endif %}
 
 {% for user in salt.pillar.get('mongodb:users', {}) %}
 add_{{ user.name }}_user_to_{{ user.database }}:
@@ -60,8 +63,6 @@ copy_mongodb_key_file:
 {% endif %}
 
 {% if 'mongodb_primary' in grains['roles'] %}
-
-
 {% set replset_config = salt.pillar.get('mongodb:replset_config') %}
 
 initiate_replset:
