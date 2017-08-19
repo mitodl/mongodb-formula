@@ -5,7 +5,10 @@ mine_functions:
 
 mongodb:
   overrides:
-    install:
+    config:
+      storage:
+        journal:
+          enabled: False
   admin_username: admin
   admin_password: password
   replset_name: rs0

@@ -1,6 +1,12 @@
 mongodb formula
 ===============
 
+201801
+------
+
+- Updated configuration format to use new YAML syntax
+- Removed Vagrant specific behavior in favor of using Pillar
+
 201701
 ------
 

@@ -7,13 +7,25 @@
     'pip_pkgs': [
       'pymongo',
     ],
+    'config': {
+        'net': {
+            'bindIp': '127.0.0.1',
+            'port': 27017
+        },
+        'systemLog': {
+            'logAppend': True,
+            'destination': 'file',
+            'path': '/var/log/mongodb/mongodb.log'
+        },
+        'storage': {
+            'dbPath': '/var/lib/mongodb',
+            'journal': {
+                'enabled': True
+            }
+        }
+    },
     'cluster_key_file': '/etc/mongodb_key',
-    'bind_ip': '127.0.0.1',
-    'port': '27017',
-    'enable_journal': True,
-    'install_pkgrepo': true,
-    'dbpath': '/var/lib/mongodb',
-    'logpath': '/var/log/mongodb/mongodb.log',
+    'install_pkgrepo': True,
     'service_name': 'mongod'
   },
   'Debian': {

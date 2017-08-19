@@ -5,14 +5,14 @@ include:
 
 {% set MONGO_ADMIN_USER = salt.pillar.get("mongodb:admin_username") %}
 {% set MONGO_ADMIN_PASSWORD = salt.pillar.get("mongodb:admin_password") %}
-{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.port) %}
+{% set mongo_cmd = '/usr/bin/mongo --port {0}'.format(mongodb.config.net.port) %}
 {% set mongodb_cluster_key = salt.pillar.get('mongodb:cluster_key') %}
 
 place_mongodb_config_file:
   file.managed:
     - name: /etc/{{ mongodb.service_name }}.conf
-    - template: jinja
-    - source: salt://mongodb/templates/mongodb.conf.j2
+    - contents: |
+        {{ mongodb.config|yaml(False)|indent(8) }}
     - watch_in:
       - service: mongodb_service_running
 
@@ -42,7 +42,7 @@ add_{{ user.name }}_user_to_{{ user.database }}:
     - passwd: {{ user.password }}
     - database: {{ user.database }}
     - host: localhost
-    - port: {{ mongodb.port }}
+    - port: {{ mongodb.config.net.port }}
     - require:
       - file: place_mongodb_config_file
       - cmd: execute_root_user_script
@@ -97,12 +97,13 @@ wait_for_initialization:
 {% endif %}
 
 {% if mongodb_cluster_key %}
+{% set keyFile = mongodb.cluster_key_file %}
+{% set replSet = salt['pillar.get']('mongodb:replset_name', 'rs0') %}
 configure_keyfile_and_replicaset:
-  file.append:
+  file.managed:
     - name: /etc/{{ mongodb.service_name }}.conf
-    - text: |
-        keyFile = {{ mongodb.cluster_key_file }}
-        replSet = {{ salt['pillar.get']('mongodb:replset_name', 'rs0') }}
+    - contents: |
+        {{ salt.slsutil.merge(mongodb.config, {'replication': {'replSetName': replSet }, 'security': {'keyFile': keyFile}})|yaml(False)|indent(8) }}
   service.running:
     - name: {{ mongodb.service_name }}
     - init_delay: 10

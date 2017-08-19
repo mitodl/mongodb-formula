@@ -1,7 +1,7 @@
 {% from "mongodb/map.jinja" import mongodb with context %}
 
 // Add super user
-conn = new Mongo("localhost:{{ mongodb.port }}");
+conn = new Mongo("localhost:{{ mongodb.config.net.port }}");
 db = conn.getDB("admin");
 
 if(!db.auth('{{ MONGO_ADMIN_USER|trim }}', '{{ MONGO_ADMIN_PASSWORD|trim }}')) {
