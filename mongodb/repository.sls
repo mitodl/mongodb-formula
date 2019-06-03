@@ -15,14 +15,14 @@ add_mongodb_package_repository:
     - humanname: MongoDB Repository
     {% if os_family == 'Debian' %}
     - name: {{ mongodb.repo }}
+    - keyid: {{ mongodb.key }}
+    - keyserver: {{ mongodb.keyserver }}
     {% elif os_family == 'RedHat' %}
-    - name: MongoDB Repository
+    - name: MongoDB-Repository
     - baseurl: {{ mongodb.repo }}
     - gpgcheck: 1
     - enabled: 1
     {% endif %}
-    - keyid: {{ mongodb.key }}
-    - keyserver: {{ mongodb.keyserver }}
     - refresh_db: True
     - require_in:
       - install_packages

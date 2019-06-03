@@ -3,6 +3,7 @@
   'default': {
     'pkgs': [
       'mongodb-org',
+      'python2-pip'
     ],
     'pip_pkgs': [
       'pymongo',
@@ -18,7 +19,7 @@
             'path': '/var/log/mongodb/mongodb.log'
         },
         'storage': {
-            'dbPath': '/var/lib/mongodb',
+            'dbPath': '/var/lib/mongo',
             'journal': {
                 'enabled': True
             }
@@ -38,8 +39,12 @@
     'keyserver': 'keyserver.ubuntu.com',
     'repo': 'deb http://repo.mongodb.org/apt/ubuntu {0}/mongodb-org/{1} multiverse'.format(grains['oscodename'], version),
   },
-  'RedHat' or 'CentOS': {
-      'gpgkey': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
-      'repo': 'https://repo.mongodb.org/yum/{0}/$releasever/mongodb-org/{1}/{2}/'.format(grains['os_family'], version, grains['osarch']),
+  'RedHat': {
+      'gpg_key': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
+      'repo': 'https://repo.mongodb.org/yum/{0}/$releasever/mongodb-org/{1}/{2}/'.format(grains['os_family']|lower, version, grains['osarch']),
     },
-}, grain='osfullname', merge=salt.pillar.get('mongodb:overrides'), base='default') %}
+   'CentOS': {
+      'gpg_key': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
+      'repo': 'https://repo.mongodb.org/yum/{0}/$releasever/mongodb-org/{1}/{2}/'.format(grains['os_family']|lower, version, grains['osarch']),
+    },
+}, grain='os', merge=salt.pillar.get('mongodb:overrides'), base='default') %}
