@@ -26,7 +26,17 @@
     },
     'cluster_key_file': '/etc/mongodb_key',
     'install_pkgrepo': True,
-    'service_name': 'mongod'
+    'service_name': 'mongod',
+    'systemd_overrides': {
+      'Service': {
+        'LimitFSIZE': 'infinity',
+        'LimitCPU': 'infinity',
+        'LimitAS': 'infinity',
+        'LimitMEMLOCK': 'infinity',
+        'LimitNOFILE': '64000',
+        'LimitNPROC': '64000'
+      }
+    }
   },
   'Debian': {
     'key': '0C49F3730359A14518585931BC711F9BA15703C6',

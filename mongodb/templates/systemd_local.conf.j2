@@ -1,0 +1,6 @@
+{%- for section, settings in mongodb_systemd_overrides.items() %}
+[{{ section }}]
+{%- for k, v in settings.items() %}
+{{ k }}={{ v }}
+{% endfor -%}
+{% endfor -%}

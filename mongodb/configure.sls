@@ -16,6 +16,17 @@ place_mongodb_config_file:
     - watch_in:
       - service: mongodb_service_running
 
+place_mongodb_systemd_overrides:
+  file.managed:
+    - name: /etc/systemd/system/multi-user.target.wants/mongodb.service.d/local.conf
+    - source: salt://mongodb/templates/systemd_local.conf.j2
+    - makedirs: True
+    - template: jinja
+    - context:
+        mongodb_systemd_overrides: {{ mongodb.systemd_overrides }}
+    - watch_in:
+      - service: mongodb_service_running
+
 place_root_user_script:
   file.managed:
     - name: /tmp/create_root.js
