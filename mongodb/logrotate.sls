@@ -1,7 +1,7 @@
 configure_log_rotation:
   file.managed:
     - name: /etc/logrotate.d/mongodb
-    - source: salt://mongodb/templates/logrotate_config.jinja
+    - source: salt://mongodb/templates/logrotate_config.j2
     - template: jinja
     - mode: '0644'
     - context:
