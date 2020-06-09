@@ -14,7 +14,7 @@ install_mongodb_gpg_key:
 {% if os_family == 'Debian' %}
 ensure_dirmngr_is_installed:
   pkg.installed:
-    - name: dirnmgr
+    - name: dirmngr
     - refresh: True
 {% endif %}
 
