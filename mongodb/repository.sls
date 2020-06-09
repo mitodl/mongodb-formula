@@ -10,6 +10,14 @@ install_mongodb_gpg_key:
 {% endif %}
 
 {% if mongodb.install_pkgrepo %}
+
+{% if os_family == 'Debian' %}
+ensure_dirmngr_is_installed:
+  pkg.installed:
+    - name: dirnmgr
+    - refresh: True
+{% endif %}
+
 add_mongodb_package_repository:
   pkgrepo.managed:
     - humanname: MongoDB Repository
