@@ -8,6 +8,7 @@ install_packages:
     - pkgs: {{ mongodb.pkgs }}
     - refresh: True
     - install_recommends: True
+    - skip_verify: True
     - require_in:
       - service: mongodb_service_running
 
