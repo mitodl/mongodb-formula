@@ -5,7 +5,7 @@ configure_log_rotation:
     - template: jinja
     - mode: '0644'
     - context:
-        name: /var/log/mongodb.log
+        name: /var/log/mongodb/mongodb.log
         options:
           - rotate 4
           - weekly
