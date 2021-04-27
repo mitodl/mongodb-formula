@@ -18,12 +18,11 @@ ensure_dirmngr_is_installed:
     - refresh: True
 {% endif %}
 
+{% if os_family == 'RedHat' %}
 add_mongodb_package_repository:
   pkgrepo.managed:
     - humanname: MongoDB Repository
-    {% if os_family == 'Debian' %}
     - name: {{ mongodb.repo }}
-    {% elif os_family == 'RedHat' %}
     - name: MongoDB Repository
     - baseurl: {{ mongodb.repo }}
     - gpgcheck: 1
@@ -34,4 +33,15 @@ add_mongodb_package_repository:
     - refresh_db: True
     - require_in:
       - install_packages
+
+{% elif os_family == 'Debian' %}
+add_mongodb_pgp_key:
+  cmd.run:
+  - name: wget -qO - https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc | sudo apt-key add -
+  - require_in:
+      - install_packages
+
+run_apt_update:
+  cmd.run:
+    - name: apt-get update
 {% endif %}

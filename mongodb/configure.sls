@@ -121,3 +121,21 @@ configure_keyfile_and_replicaset:
     - watch:
         - file: configure_keyfile_and_replicaset
 {% endif %}
+
+# Make sure that the log file can be read by group 'adm' so that logging agents
+# can read it.
+ensure_ownership_and_perms_of_logfile:
+  file.managed:
+    - name: /var/log/mongodb/mongodb.log
+    - user: mongodb
+    - group: adm
+    - mode: 0640
+
+set_directory_permissions_on_var_lib_mongodb:
+  file.directory:
+    - name: /var/lib/mongodb
+    - user: mongodb
+    - group: monogdb
+    - recurse:
+        - user
+        - group

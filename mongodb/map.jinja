@@ -36,18 +36,11 @@
         'LimitMEMLOCK': 'infinity',
         'LimitNOFILE': '64000',
         'LimitNPROC': '64000'
+        {% if version >= '4.0' %}
+        'PIDFile': '/run/mongodb/mongod.pid',
+        {% endif %}
       }
     }
-  },
-  'Debian': {
-    'key': '0C49F3730359A14518585931BC711F9BA15703C6',
-    'keyserver': 'keyserver.ubuntu.com',
-    'repo': 'deb http://repo.mongodb.org/apt/debian {0}/mongodb-org/{1} main'.format(grains['oscodename'], version),
-  },
-  'Ubuntu': {
-    'key': '0C49F3730359A14518585931BC711F9BA15703C6',
-    'keyserver': 'keyserver.ubuntu.com',
-    'repo': 'deb http://repo.mongodb.org/apt/ubuntu {0}/mongodb-org/{1} multiverse'.format(grains['oscodename'], version),
   },
   'RedHat' or 'CentOS': {
       'gpgkey': 'https://www.mongodb.org/static/pgp/server-{0}.asc'.format(version),
