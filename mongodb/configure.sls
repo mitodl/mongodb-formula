@@ -135,8 +135,6 @@ set_directory_permissions_on_var_lib_mongodb:
   file.directory:
     - name: /var/lib/mongodb
     - user: mongodb
-    - group: monogdb
     - makedirs: True
     - recurse:
         - user
-        - group
