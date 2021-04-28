@@ -18,7 +18,7 @@ place_mongodb_config_file:
 
 place_mongodb_systemd_overrides:
   file.managed:
-    - name: /etc/systemd/system/mongodb.service.d/overrides.conf
+    - name: /etc/systemd/system/mongod.service.d/override.conf
     - source: salt://mongodb/templates/systemd_local.conf.j2
     - makedirs: True
     - template: jinja
