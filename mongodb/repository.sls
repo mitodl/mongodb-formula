@@ -35,6 +35,10 @@ add_mongodb_pgp_key:
   - name: wget -qO - https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc | sudo apt-key add -
   - require_in:
       - install_packages
+      
+add_mongodb_to_apt_sources:
+  cmd.run:
+    - name: echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/{{ mongodb.version }} main" | sudo tee /etc/apt/sources.list.d/mongodb-org-{{ mongodb.version }}.list
 
 run_apt_update:
   cmd.run:
