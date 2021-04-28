@@ -10,14 +10,6 @@ install_mongodb_gpg_key:
 {% endif %}
 
 {% if mongodb.install_pkgrepo %}
-
-{% if os_family == 'Debian' %}
-ensure_dirmngr_is_installed:
-  pkg.installed:
-    - name: dirmngr
-    - refresh: True
-{% endif %}
-
 {% if os_family == 'RedHat' %}
 add_mongodb_package_repository:
   pkgrepo.managed:
@@ -32,8 +24,12 @@ add_mongodb_package_repository:
     - refresh_db: True
     - require_in:
       - install_packages
-
 {% elif os_family == 'Debian' %}
+ensure_dirmngr_is_installed:
+  pkg.installed:
+    - name: dirmngr
+    - refresh: True
+
 add_mongodb_pgp_key:
   cmd.run:
   - name: wget -qO - https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc | sudo apt-key add -
@@ -43,4 +39,5 @@ add_mongodb_pgp_key:
 run_apt_update:
   cmd.run:
     - name: apt-get update
+{% endif %}
 {% endif %}
