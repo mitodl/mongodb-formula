@@ -27,7 +27,6 @@ add_mongodb_package_repository:
     - baseurl: {{ mongodb.repo }}
     - gpgcheck: 1
     - enabled: 1
-    {% endif %}
     - keyid: {{ mongodb.key }}
     - keyserver: {{ mongodb.keyserver }}
     - refresh_db: True
