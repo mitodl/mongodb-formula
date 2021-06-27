@@ -1,4 +1,4 @@
-{% set version = salt.pillar.get('mongodb:version', '3.6') %}
+{% set version = salt.pillar.get('mongodb:version', '4.4') %}
 {% set mongodb = salt.grains.filter_by({
   'default': {
     'version': '3.6',
